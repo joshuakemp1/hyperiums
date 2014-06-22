@@ -20,4 +20,4 @@ response = Net::HTTP.get_response(uri)
 
 puts response.code.to_i
 
-puts response
+puts response.body
