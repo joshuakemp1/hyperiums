@@ -1,19 +1,14 @@
-require 'rubygems'
-require 'open-uri'
+require "net/http"
+require "uri"
 
-@url = "http://www.igvita.com"
-@response = ''
+uri = URI.parse("http://hyperiums.com/")
 
-# open-uri RDoc: http://stdlib.rubyonrails.org/libdoc/open-uri/rdoc/index.html
-open(@url, "User-Agent" => "Ruby/#{RUBY_VERSION}",
-    "From" => "email@addr.com",
-    "Referer" => "http://www.igvita.com/") { |f|
-    puts "Fetched document: #{f.base_uri}"
-    puts "\t Content Type: #{f.content_type}\n"
-    puts "\t Charset: #{f.charset}\n"
-    puts "\t Content-Encoding: #{f.content_encoding}\n"
-    puts "\t Last Modified: #{f.last_modified}\n\n"
+# Shortcut
+response = Net::HTTP.get_response(uri)
 
-    # Save the response body
-    @response = f.read
-}
+# Will print response.body
+Net::HTTP.get_print(uri)
+
+# Full
+http = Net::HTTP.new(uri.host, uri.port)
+response = http.request(Net::HTTP::Get.new(uri.request_uri))
