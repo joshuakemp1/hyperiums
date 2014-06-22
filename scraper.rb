@@ -21,3 +21,7 @@ response = Net::HTTP.get_response(uri)
 puts response.code.to_i
 
 puts response.body
+
+r = http.get(path)
+cookie = {'Cookie'=>r.to_hash['set-cookie'].collect{|ea|ea[/^.*?;/]}.join}
+r = http.get(next_path,cookie)
