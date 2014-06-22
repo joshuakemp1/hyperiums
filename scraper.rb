@@ -4,7 +4,9 @@ require "uri"
 uname = ARGV[0]
 pass = ARGV[1]
 
-uri = URI.parse("http://hyp2.hyperiums.com/servlet/Login?login=#{uname}&lang=0&pwd=#{pass}")
+uri = URI.parse("http://www.hyperiums.com/servlet/Login?login=#{uname}&lang=0&pwd=#{pass}")
+
+uri2 = URI.parse("http://hyp2.hyperiums.com/servlet/Home")
 
 # Shortcut
 #response = Net::HTTP.get_response(uri)
@@ -16,12 +18,8 @@ uri = URI.parse("http://hyp2.hyperiums.com/servlet/Login?login=#{uname}&lang=0&p
 #http = Net::HTTP.new(uri.host, uri.port)
 #response = http.request(Net::HTTP::Get.new(uri.request_uri))
 
-response = Net::HTTP.get_response(uri)
-
-puts response.code.to_i
-
-puts response.body
-
-r = http.get(path)
+r = http.get(uri)
 cookie = {'Cookie'=>r.to_hash['set-cookie'].collect{|ea|ea[/^.*?;/]}.join}
-r = http.get(next_path,cookie)
+r = http.get(uri2,cookie)
+
+puts r.code.to_i
