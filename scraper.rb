@@ -1,25 +1,24 @@
-require "net/http"
-require "uri"
+require 'httpclient'
 
 uname = ARGV[0]
 pass = ARGV[1]
 
-uri = URI.parse("http://www.hyperiums.com/servlet/Login?login=#{uname}&lang=0&pwd=#{pass}")
+clnt = HTTPClient.new
+clnt.set_cookie_store('./cookie.dat')
 
-uri2 = URI.parse("http://hyp2.hyperiums.com/servlet/Home")
+if clnt.cookie_manager.check_expired_cookies
+  #Process the 3 part login to gather cookies.
+  body = { 'login' => uname, 'pwd' => pass }
+  puts clnt.post('http://www.hyperiums.com/servlet/Login', body)
+  
+  body = { 'login' => uname, 'pwd' => pass, 'weblogin'=>'Login'}
+  puts clnt.post('http://hyp2.hyperiums.com/servlet/Login', body)
+  
+  body = { 'fromlogin'=>''}
+  puts clnt.post('http://hyp2.hyperiums.com/servlet/Home', body).content
+else
+  #If the cookies are still valid, request the home page.
+  puts clnt.get_content('http://hyp2.hyperiums.com/servlet/Home')
+end
 
-# Shortcut
-#response = Net::HTTP.get_response(uri)
-
-# Will print response.body
-#Net::HTTP.get_print(uri)
-
-# Full
-#http = Net::HTTP.new(uri.host, uri.port)
-#response = http.request(Net::HTTP::Get.new(uri.request_uri))
-
-r = http.get(uri)
-cookie = {'Cookie'=>r.to_hash['set-cookie'].collect{|ea|ea[/^.*?;/]}.join}
-r = http.get(uri2,cookie)
-
-puts r.code.to_i
+clnt.save_cookie_store
