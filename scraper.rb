@@ -1,8 +1,18 @@
+# Need to make sure that you are logged out the browser session before you attempt to run this.
+
 require 'rubygems'
-require 'nokogiri'
+require 'mechanize'
 
-page = Nokogiri::HTML(open("index.html"))
+uname = ARGV[0]
+pass = ARGV[1]
 
-puts page.class # => Nokogiri::HTML::Document
+a = Mechanize.new { |agent|
+  agent.user_agent_alias = 'Mac Safari'
+}
 
-require 'open-uri'
+page = a.get("http://www.hyperiums.com/servlet/Login?login=#{uname}&pwd=#{pass}&lang=0")
+page = a.get("http://hyp2.hyperiums.com/servlet/Login?login=#{uname}&pwd=#{pass}&weblogin=login")
+page = a.get("http://hyp2.hyperiums.com/servlet/Home")  
+
+puts page.code.to_i
+puts page.content
